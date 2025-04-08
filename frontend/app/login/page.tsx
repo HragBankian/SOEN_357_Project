@@ -5,24 +5,21 @@ import { useRouter } from 'next/navigation';
 import styles from '../login.module.css';
 import { useAuth } from '../context/AuthContext';
 
-export default function CreateAccountPage() {
+export default function LoginPage() {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
+    if (username === 'Username' && password === 'Password') {
+      login();
+      router.push('/');
+    } else {
+      setError('Invalid credentials');
     }
-    // This is just for show, no actual functionality
-    login();
-    router.push('/');
   };
 
   return (
@@ -37,14 +34,14 @@ export default function CreateAccountPage() {
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Create Account Container */}
+        {/* Login Container */}
         <div className={styles.loginContainer}>
           <div className={styles.welcomeSection}>
             <h1 className={styles.welcomeHeading}>
-              Join OmniFit!
+              Welcome to OmniFit!
             </h1>
             <p className={styles.welcomeText}>
-              Create your account to start tracking your fitness journey.
+              Your personal fitness companion.
             </p>
           </div>
 
@@ -61,23 +58,7 @@ export default function CreateAccountPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className={styles.input}
-                placeholder="Choose a username"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="email" className={styles.label}>
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={styles.input}
-                placeholder="Enter your email"
+                placeholder="Enter your username"
               />
             </div>
 
@@ -93,23 +74,7 @@ export default function CreateAccountPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={styles.input}
-                placeholder="Create a password"
-              />
-            </div>
-
-            <div className={styles.inputGroup}>
-              <label htmlFor="confirmPassword" className={styles.label}>
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={styles.input}
-                placeholder="Confirm your password"
+                placeholder="Enter your password"
               />
             </div>
 
@@ -124,14 +89,14 @@ export default function CreateAccountPage() {
                 type="submit"
                 className={styles.button}
               >
-                Create Account
+                Login
               </button>
             </div>
           </form>
 
           <div className={styles.switchAccount}>
             <p className={styles.switchAccountText}>
-              Already have an account? <a href="/login" className={styles.switchAccountLink}>Login</a>
+              Don't have an account? <a href="/create-account" className={styles.switchAccountLink}>Create Account</a>
             </p>
           </div>
         </div>
