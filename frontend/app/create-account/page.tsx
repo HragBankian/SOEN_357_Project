@@ -2,21 +2,24 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './login.module.css';
+import styles from '../login.module.css';
 
-export default function LoginPage() {
+export default function CreateAccountPage() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'Username' && password === 'Password') {
-      router.push('/dashboard');
-    } else {
-      setError('Invalid credentials');
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
     }
+    // This is just for show, no actual functionality
+    router.push('/dashboard');
   };
 
   return (
@@ -31,14 +34,14 @@ export default function LoginPage() {
 
       {/* Content */}
       <div className="relative z-10">
-        {/* Login Container */}
+        {/* Create Account Container */}
         <div className={styles.loginContainer}>
           <div className={styles.welcomeSection}>
             <h1 className={styles.welcomeHeading}>
-              Welcome to OmniFit!
+              Join OmniFit!
             </h1>
             <p className={styles.welcomeText}>
-              Your personal fitness companion.
+              Create your account to start tracking your fitness journey.
             </p>
           </div>
 
@@ -55,7 +58,23 @@ export default function LoginPage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className={styles.input}
-                placeholder="Enter your username"
+                placeholder="Choose a username"
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor="email" className={styles.label}>
+                Email
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={styles.input}
+                placeholder="Enter your email"
               />
             </div>
 
@@ -71,7 +90,23 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={styles.input}
-                placeholder="Enter your password"
+                placeholder="Create a password"
+              />
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor="confirmPassword" className={styles.label}>
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={styles.input}
+                placeholder="Confirm your password"
               />
             </div>
 
@@ -86,14 +121,14 @@ export default function LoginPage() {
                 type="submit"
                 className={styles.button}
               >
-                Login
+                Create Account
               </button>
             </div>
           </form>
 
           <div className={styles.switchAccount}>
             <p className={styles.switchAccountText}>
-              Don't have an account? <a href="/create-account" className={styles.switchAccountLink}>Create Account</a>
+              Already have an account? <a href="/" className={styles.switchAccountLink}>Login</a>
             </p>
           </div>
         </div>
