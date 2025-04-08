@@ -1,0 +1,434 @@
+.dashboardContainer {
+  min-height: 100vh;
+  height: 100vh;
+  background-color: #0f172a;
+  color: white;
+  padding: 1.5rem;
+  overflow: hidden;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.weekLabel {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.25rem;
+}
+
+.logoutButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background-color: rgba(239, 68, 68, 0.2);
+  color: white;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 0.875rem;
+}
+
+.logoutButton:hover {
+  background-color: rgba(239, 68, 68, 0.3);
+}
+
+.logoutButton svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.contentContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.weekGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+@media (max-width: 768px) {
+  .weekGrid {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+.dayCard {
+  background-color: #1a1f3c;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: auto;
+  width: 100%;
+}
+
+.dateHeader {
+  text-align: center;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dayName {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 0.25rem;
+}
+
+.dayNumber {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+}
+
+.workoutSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.checkbox {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 0.5rem;
+  border: 2px solid #6C47FF;
+  background-color: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.checkbox.checked {
+  background-color: #6C47FF;
+}
+
+.checkbox svg {
+  width: 1rem;
+  height: 1rem;
+  color: white;
+}
+
+.workoutLabel {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.weightSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weightInput {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.weightLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.weightField {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(30, 41, 59, 0.5);
+  color: white;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.weightField:focus {
+  outline: none;
+  border-color: #6C47FF;
+  box-shadow: 0 0 0 2px rgba(108, 71, 255, 0.2);
+}
+
+.weightField::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.saveDayButton {
+  padding: 0.75rem 1.5rem;
+  background-color: #6C47FF;
+  color: white;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.saveDayButton:hover {
+  background-color: #5A3CD9;
+}
+
+.workoutInfo {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+}
+
+.graphsSection {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  padding: 0 1rem;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .graphsSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+.graphCard {
+  background-color: #1a1f3c;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.graphCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.2);
+}
+
+.graphTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+.graphContainer {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  gap: 0.5rem;
+}
+
+.barContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  position: relative;
+}
+
+.bar {
+  width: 70%;
+  background: linear-gradient(to top, #6C47FF, #8A6FFF);
+  border-radius: 0.25rem 0.25rem 0 0;
+  transition: height 0.3s ease;
+  box-shadow: 0 4px 6px -1px rgba(108, 71, 255, 0.2);
+  min-height: 4px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.barValue {
+  position: absolute;
+  top: -1.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+.barLabel {
+  position: absolute;
+  bottom: -1.5rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-align: center;
+  font-weight: 500;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
+.lineGraph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #6C47FF, #8A6FFF);
+  box-shadow: 0 0 8px rgba(108, 71, 255, 0.4);
+  z-index: 1;
+}
+
+.linePoint {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: #6C47FF;
+  border-radius: 50%;
+  transform: translate(-50%, 50%);
+  box-shadow: 0 0 8px rgba(108, 71, 255, 0.6);
+  z-index: 2;
+}
+
+.linePointLabel {
+  position: absolute;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+  transform: translateX(-50%);
+  top: -1.75rem;
+  font-weight: 600;
+  background-color: rgba(26, 31, 60, 0.8);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.dayLabels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.dayLabel {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.graphLegend {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legendColor {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.125rem;
+}
+
+.legendColorBar {
+  background: linear-gradient(to top, #6C47FF, #8A6FFF);
+}
+
+.legendColorLine {
+  background: linear-gradient(to right, #6C47FF, #8A6FFF);
+  width: 1rem;
+  height: 0.125rem;
+}
+
+.loadingText {
+  text-align: center;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 1rem;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(108, 71, 255, 0.1);
+  border: 1px solid rgba(108, 71, 255, 0.2);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #6C47FF;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  background: rgba(108, 71, 255, 0.2);
+  border-color: rgba(108, 71, 255, 0.3);
+}
+
+.iconButton svg {
+  width: 1.5rem;
+  height: 1.5rem;
+} 
