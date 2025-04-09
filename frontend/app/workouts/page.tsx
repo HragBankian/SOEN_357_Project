@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../dashboard.module.css';
 import { useAuth } from '../context/AuthContext';
+import {API_URL} from "@/utils/apiConnection";
 
 // Exercise type definition
 interface Exercise {
@@ -50,6 +51,56 @@ export default function WorkoutsPage() {
     setMounted(true);
     if (mounted && !isLoggedIn && !isLoggingOut.current) {
       router.push('/login');
+    }
+    
+    const fetchWorkouts = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/Workout/GetAll`);
+        const data = await res.json();
+  
+        const groupedByDay: { [day: string]: Exercise[] } = {};
+  
+        for (const item of data) {
+          const exercises: Exercise[] = [];
+  
+          for (let i = 1; i <= 6; i++) {
+            const name = item[`exercise_${i}`];
+            const weight = item[`weight_${i}`];
+            const sets = item[`sets_${i}`];
+            const reps = item[`reps_${i}`];
+  
+            const isValid = name?.trim() !== '' && (weight !== 0 || sets !== 0 || reps !== 0);
+            if (isValid) {
+              exercises.push({
+                id: `${item.id}_${i}`, // Use workout ID + index to keep unique
+                name,
+                weight: weight.toString(),
+                sets: sets.toString(),
+                reps: reps.toString(),
+              });
+            }
+          }
+  
+          if (!groupedByDay[item.day_of_week]) {
+            groupedByDay[item.day_of_week] = [];
+          }
+  
+          groupedByDay[item.day_of_week].push(...exercises);
+        }
+  
+        setWeekSchedule((prev) =>
+          prev.map((day) => ({
+            ...day,
+            exercises: groupedByDay[day.dayName] || [],
+          }))
+        );
+      } catch (error) {
+        console.error('Failed to fetch workouts:', error);
+      }
+    };
+  
+    if (mounted && isLoggedIn) {
+      fetchWorkouts();
     }
     
     return () => {
@@ -124,11 +175,67 @@ export default function WorkoutsPage() {
     });
   };
 
-  const handleSaveWorkouts = () => {
-    // For now, just show what would be saved
-    console.log('Saving workouts:', weekSchedule);
-    alert('Workout plan saved successfully!');
+  const handleSaveWorkouts = async () => {
+    try {
+      // Only delete if we have something in the current schedule
+      const hasAnyExercise = weekSchedule.some(day =>
+        day.exercises.some(ex => ex.name.trim() !== '')
+      );
+  
+      if (!hasAnyExercise) {
+        alert("Nothing to save.");
+        return;
+      }
+  
+      // Step 1: Delete all existing workouts
+      await fetch(`${API_URL}/api/Workout/DeleteAll`, {
+        method: 'DELETE',
+      });
+
+
+      // Step 2: Re-add workouts day by day
+      for (const day of weekSchedule) {
+        const paddedExercises = [...day.exercises];
+  
+        // Pad up to 6 exercises with blanks
+        while (paddedExercises.length < 6) {
+          paddedExercises.push({
+            id: '',
+            name: '',
+            weight: '0',
+            sets: '0',
+            reps: '0',
+          });
+        }
+  
+        const body = {
+          day_of_week: day.dayName,
+          ...Object.fromEntries(
+            paddedExercises.flatMap((ex, idx) => [
+              [`exercise_${idx + 1}`, ex.name],
+              [`weight_${idx + 1}`, parseInt(ex.weight || '0')],
+              [`sets_${idx + 1}`, parseInt(ex.sets || '0')],
+              [`reps_${idx + 1}`, parseInt(ex.reps || '0')],
+            ])
+          ),
+        };
+  
+        await fetch(`${API_URL}/api/Workout/AddWorkout`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(body),
+        });
+      }
+  
+      alert('Workout plan saved successfully!');
+    } catch (err) {
+      console.error('Error saving workouts:', err);
+      alert('Failed to save workout plan.');
+    }
   };
+  
 
   const toggleRecommendations = () => {
     setShowRecommendations(!showRecommendations);
