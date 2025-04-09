@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../dashboard.module.css';
 import { useAuth } from '../context/AuthContext';
+import {API_URL} from "@/utils/apiConnection";
 
 // Exercise type definition
 interface Exercise {
@@ -54,7 +55,7 @@ export default function WorkoutsPage() {
     
     const fetchWorkouts = async () => {
       try {
-        const res = await fetch('http://localhost:5030/api/Workout/GetAll');
+        const res = await fetch(`${API_URL}/api/Workout/GetAll`);
         const data = await res.json();
   
         const groupedByDay: { [day: string]: Exercise[] } = {};
@@ -187,10 +188,11 @@ export default function WorkoutsPage() {
       }
   
       // Step 1: Delete all existing workouts
-      await fetch('http://localhost:5030/api/Workout/DeleteAll', {
+      await fetch(`${API_URL}/api/Workout/DeleteAll`, {
         method: 'DELETE',
       });
-  
+
+
       // Step 2: Re-add workouts day by day
       for (const day of weekSchedule) {
         const paddedExercises = [...day.exercises];
@@ -218,7 +220,7 @@ export default function WorkoutsPage() {
           ),
         };
   
-        await fetch('http://localhost:5030/api/Workout/AddWorkout', {
+        await fetch(`${API_URL}/api/Workout/AddWorkout`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
