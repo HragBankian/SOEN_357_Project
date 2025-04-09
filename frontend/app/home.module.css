@@ -10,7 +10,7 @@
   top: 0;
   left: 0;
   right: 0;
-  background-color: rgba(15, 23, 42, 0.9);
+  background-color: rgba(15, 23, 42, 0.8);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -22,31 +22,25 @@
 
 .navbarLogo {
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: bold;
   color: white;
   text-decoration: none;
 }
 
 .navbarLinks {
   display: flex;
-  gap: 2rem;
+  gap: 1.5rem;
+  align-items: center;
 }
 
 .navbarLink {
-  color: rgba(255, 255, 255, 0.7);
-  text-decoration: none;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 500;
   transition: color 0.2s;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-  padding: 0;
 }
 
 .navbarLink:hover {
-  color: white;
+  color: #6C47FF;
 }
 
 .navbarLink.disabled {
