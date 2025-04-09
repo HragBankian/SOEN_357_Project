@@ -26,12 +26,12 @@ interface DayData {
 // Sample data for graphs
 const weeklyWorkoutData = [
   { day: 'Mon', count: 4, details: 'Push' },
-  { day: 'Tue', count: 4, details: 'Pull' },
-  { day: 'Wed', count: 4, details: 'Legs' },
-  { day: 'Thu', count: 3, details: 'Cardio' },
+  { day: 'Tue', count: 3, details: 'Pull' },
+  { day: 'Wed', count: 2, details: 'Legs' },
+  { day: 'Thu', count: 1, details: 'Cardio' },
   { day: 'Fri', count: 4, details: 'Upper' },
-  { day: 'Sat', count: 4, details: 'Pull' },
-  { day: 'Sun', count: 4, details: 'Legs' }
+  { day: 'Sat', count: 3, details: 'Pull' },
+  { day: 'Sun', count: 2, details: 'Legs' }
 ];
 
 // Function to save day data to backend (placeholder for future implementation)
