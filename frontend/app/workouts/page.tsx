@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from '../dashboard.module.css';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +25,8 @@ export default function WorkoutsPage() {
   const { isLoggedIn, logout } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [isAddingTo, setIsAddingTo] = useState<string | null>(null);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const isLoggingOut = useRef(false);
   
   // Sample exercise list (to be replaced with actual data later)
   const exerciseOptions = [
@@ -46,7 +48,7 @@ export default function WorkoutsPage() {
 
   useEffect(() => {
     setMounted(true);
-    if (mounted && !isLoggedIn) {
+    if (mounted && !isLoggedIn && !isLoggingOut.current) {
       router.push('/login');
     }
     
@@ -56,6 +58,7 @@ export default function WorkoutsPage() {
   }, [isLoggedIn, router, mounted]);
 
   const handleLogout = () => {
+    isLoggingOut.current = true;
     logout();
     router.push('/');
   };
@@ -127,6 +130,10 @@ export default function WorkoutsPage() {
     alert('Workout plan saved successfully!');
   };
 
+  const toggleRecommendations = () => {
+    setShowRecommendations(!showRecommendations);
+  };
+
   if (!mounted) {
     return null;
   }
@@ -146,7 +153,40 @@ export default function WorkoutsPage() {
       </nav>
 
       <div className={styles.contentContainer}>
-        <h1 className={styles.title}>My Weekly Workout Plan</h1>
+        <div className={styles.titleContainer}>
+          <h1 className={styles.title}>My Weekly Workout Plan</h1>
+          <button 
+            className={styles.recommendationButton}
+            onClick={toggleRecommendations}
+          >
+            Get Recommendations
+          </button>
+        </div>
+        
+        {showRecommendations && (
+          <div className={styles.recommendationsBox}>
+            <h3 className={styles.recommendationsTitle}>Workout Recommendations</h3>
+            <div className={styles.recommendationsText}>
+              <p>Based on your current workout plan, we recommend:</p>
+              <ul>
+                <li>Add Bicep Curls on Friday to balance your push and pull movements</li>
+                <li>Consider moving Push-ups from Friday to Wednesday only to avoid training the same muscle groups too frequently</li>
+                <li>Add Deadlifts on Monday to strengthen your posterior chain and complement your squat-focused leg day</li>
+                <li>Separate your workouts into clear Push (Wednesday), Pull (Friday), and Legs (Monday) for better recovery</li>
+                <li>Increase Pull-ups on Friday to better develop your back muscles</li>
+              </ul>
+              <p className={styles.recommendationsNote}>
+                Note: These recommendations aim to balance your workout, prevent overtraining, and ensure all major muscle groups receive adequate attention.
+              </p>
+            </div>
+            <button 
+              className={styles.closeRecommendationsButton}
+              onClick={toggleRecommendations}
+            >
+              Close
+            </button>
+          </div>
+        )}
         
         <div className={styles.workoutGrid}>
           {weekSchedule.map((day) => (
