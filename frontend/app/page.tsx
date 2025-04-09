@@ -49,6 +49,13 @@ export default function HomePage() {
     }
   };
 
+  const handleWorkoutsClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      router.push('/login');
+    }
+  };
+
   return (
     <div className={styles.homeContainer}>
       {/* Navbar */}
@@ -61,6 +68,13 @@ export default function HomePage() {
             onClick={handleDashboardClick}
           >
             Dashboard
+          </a>
+          <a 
+            href="/workouts" 
+            className={styles.navbarLink}
+            onClick={handleWorkoutsClick}
+          >
+            My Workouts
           </a>
           {isLoggedIn ? (
             <button onClick={handleLogout} className={styles.navbarLink}>
