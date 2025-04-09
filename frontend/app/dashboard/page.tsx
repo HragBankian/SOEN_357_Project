@@ -25,23 +25,13 @@ interface DayData {
 
 // Sample data for graphs
 const weeklyWorkoutData = [
-  { day: 'Mon', count: 5 },
-  { day: 'Tue', count: 3 },
-  { day: 'Wed', count: 4 },
-  { day: 'Thu', count: 0 },
-  { day: 'Fri', count: 0 },
-  { day: 'Sat', count: 0 },
-  { day: 'Sun', count: 0 }
-];
-
-const weightTrendData = [
-  { day: 'Mon', weight: 175.5 },
-  { day: 'Tue', weight: 175.0 },
-  { day: 'Wed', weight: 174.5 },
-  { day: 'Thu', weight: null },
-  { day: 'Fri', weight: null },
-  { day: 'Sat', weight: null },
-  { day: 'Sun', weight: null }
+  { day: 'Mon', count: 4, details: 'Push' },
+  { day: 'Tue', count: 4, details: 'Pull' },
+  { day: 'Wed', count: 4, details: 'Legs' },
+  { day: 'Thu', count: 3, details: 'Cardio' },
+  { day: 'Fri', count: 4, details: 'Upper' },
+  { day: 'Sat', count: 4, details: 'Pull' },
+  { day: 'Sun', count: 4, details: 'Legs' }
 ];
 
 // Function to save day data to backend (placeholder for future implementation)
@@ -99,8 +89,6 @@ const fetchDays = async (): Promise<DayTrackerModel[]> => {
   }
 };
 
-
-
 export default function DashboardPage() {
   const router = useRouter();
   const { isLoggedIn, logout } = useAuth();
@@ -108,6 +96,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
   const isLoggingOut = useRef(false);
+  const [trackerData, setTrackerData] = useState<DayTrackerModel[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -115,34 +104,37 @@ export default function DashboardPage() {
       router.push('/login');
     }
     
-    // Initialize week data starting from Monday April 7 to Sunday April 13, 2025
-    const initializeWeekData = () => {
-      // Start with Monday, April 7, 2025
-      const startDate = new Date(2025, 3, 7); // Month is 0-based, so 3 is April
-      
-      // Hardcoded workout data for the week (Monday to Sunday) - PPL Split
-      const workoutData = [
-        { workoutType: 'Push' },
-        { workoutType: 'Pull' },
-        { workoutType: 'Legs' },
-        { workoutType: 'Rest' },
-        { workoutType: 'Push' },
-        { workoutType: 'Pull' },
-        { workoutType: 'Legs' }
-      ];
-      
-      const initialData = Array.from({ length: 7 }, (_, i) => ({
-        date: addDays(startDate, i),
-        workoutCompleted: i < 3, // First 3 days completed
-        weight: i < 3 ? 175.5 - (i * 0.5) : null, // Sample weights decreasing slightly
-        workoutType: workoutData[i].workoutType
-      }));
-      
-      setWeekData(initialData);
-      setIsLoading(false);
+    const loadData = async () => {
+      try {
+        const days = await fetchDays();
+        setTrackerData(days);
+        
+        // Initialize week data starting from Monday April 7 to Sunday April 13, 2025
+        const startDate = new Date(2025, 3, 7); // Month is 0-based, so 3 is April
+        
+        const initialData = Array.from({ length: 7 }, (_, i) => {
+          const dayName = format(addDays(startDate, i), 'EEEE').toLowerCase();
+          const dayData = days.find(d => d.day_of_week.toLowerCase() === dayName);
+          const workoutInfo = weeklyWorkoutData[i];
+          
+          return {
+            date: addDays(startDate, i),
+            workoutCompleted: dayData?.workout_is_complete || false,
+            weight: dayData?.bodyweight || null,
+            workoutType: workoutInfo.details.split(',')[0], // First exercise as the type
+            workoutDetails: workoutInfo.details
+          };
+        });
+        
+        setWeekData(initialData);
+        setIsLoading(false);
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setIsLoading(false);
+      }
     };
 
-    initializeWeekData();
+    loadData();
     
     return () => {
       setMounted(false);
@@ -186,11 +178,38 @@ export default function DashboardPage() {
         workoutCompleted
       );
       
+      // Refresh tracker data to update the weight trend graph
+      const updatedDays = await fetchDays();
+      setTrackerData(updatedDays);
+      
       // Show success message
       alert(`Day ${dayOfTheWeek.charAt(0).toUpperCase() + dayOfTheWeek.slice(1)} saved successfully!`);
     } catch (error) {
       // Show error message
       alert(`Failed to save day data: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  };
+
+  const handleSaveAllDays = async () => {
+    try {
+      // Create an array of promises for each day
+      const savePromises = weekData.map(day => {
+        const dayName = format(day.date, 'EEEE').toLowerCase();
+        return saveDay(dayName, day.weight, day.workoutCompleted);
+      });
+      
+      // Wait for all save operations to complete
+      await Promise.all(savePromises);
+      
+      // Refresh tracker data to update the weight trend graph
+      const updatedDays = await fetchDays();
+      setTrackerData(updatedDays);
+      
+      // Show success message
+      alert('All days saved successfully!');
+    } catch (error) {
+      // Show error message
+      alert(`Failed to save days: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -207,6 +226,11 @@ export default function DashboardPage() {
   }
 
   // Calculate max values for graphs
+  const weightTrendData = trackerData.map(day => ({
+    day: day.day_of_week.substring(0, 3),
+    weight: day.bodyweight
+  }));
+
   const maxWorkoutCount = Math.max(...weeklyWorkoutData.map(item => item.count));
   const validWeights = weightTrendData.map(item => item.weight).filter((weight): weight is number => weight !== null);
   const minWeight = Math.min(...validWeights);
@@ -248,7 +272,7 @@ export default function DashboardPage() {
                 </div>
                 {day.workoutType && (
                   <div className={styles.workoutInfo}>
-                    <div>{day.workoutType}</div>
+                    <div>{day.workoutDetails}</div>
                   </div>
                 )}
               </div>
@@ -314,7 +338,7 @@ export default function DashboardPage() {
               {weightTrendData.map((item, index) => {
                 const xPosition = (index / (weightTrendData.length - 1)) * 100;
                 const yPosition = item.weight !== null 
-                  ? 100 - ((item.weight - minWeight) / weightRange) * 100 
+                  ? ((item.weight - minWeight) / weightRange) * 100 
                   : 0;
                 
                 return (
@@ -344,6 +368,15 @@ export default function DashboardPage() {
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className={styles.saveAllContainer}>
+          <button 
+            className={styles.saveAllButton}
+            onClick={handleSaveAllDays}
+          >
+            Save All Days
+          </button>
         </div>
       </div>
     </div>
