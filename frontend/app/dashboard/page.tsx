@@ -245,7 +245,8 @@ export default function DashboardPage() {
         <div className={styles.navbarLinks}>
           <a href="/dashboard" className={styles.navbarLink}>Dashboard</a>
           <a href="/workouts" className={styles.navbarLink}>My Workouts</a>
-          <button onClick={handleLogout} className={styles.navbarLink}>
+          <a href="/achievements" className={styles.navbarLink}>Achievements</a>
+          <button onClick={handleLogout} className="bg-red-500/20 text-white font-medium hover:bg-red-500/30 transition-colors px-3 py-2 rounded-lg border border-red-500/30" style={{ cursor: 'pointer' }}>
             Logout
           </button>
         </div>

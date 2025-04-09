@@ -42,6 +42,10 @@ export default function HomePage() {
     router.push('/');
   };
 
+  const handleLogin = () => {
+    router.push('/login');
+  };
+
   const handleDashboardClick = (e: React.MouseEvent) => {
     if (!isLoggedIn) {
       e.preventDefault();
@@ -55,6 +59,12 @@ export default function HomePage() {
       router.push('/login');
     }
   };
+  const handleAchievementsClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      e.preventDefault();
+      router.push('/login');
+    }
+  };
 
   return (
     <div className={styles.homeContainer}>
@@ -62,26 +72,17 @@ export default function HomePage() {
       <nav className={styles.navbar}>
         <a href="/" className={styles.navbarLogo}>OmniFit</a>
         <div className={styles.navbarLinks}>
-          <a 
-            href="/dashboard" 
-            className={styles.navbarLink}
-            onClick={handleDashboardClick}
-          >
-            Dashboard
-          </a>
-          <a 
-            href="/workouts" 
-            className={styles.navbarLink}
-            onClick={handleWorkoutsClick}
-          >
-            My Workouts
-          </a>
+          <a href="/dashboard" className={styles.navbarLink} onClick={handleDashboardClick}>Dashboard</a>
+          <a href="/workouts" className={styles.navbarLink} onClick={handleWorkoutsClick}>My Workouts</a>
+          <a href="/achievements" className={styles.navbarLink} onClick={handleAchievementsClick}>Achievements</a>
           {isLoggedIn ? (
-            <button onClick={handleLogout} className={styles.navbarLink}>
+            <button onClick={handleLogout} className="bg-red-500/20 text-white font-medium hover:bg-red-500/30 transition-colors px-3 py-2 rounded-lg border border-red-500/30" style={{ cursor: 'pointer' }}>
               Logout
             </button>
           ) : (
-            <a href="/login" className={styles.navbarLink}>Login</a>
+            <button onClick={handleLogin} className="bg-green-500/20 text-white font-medium hover:bg-green-500/30 transition-colors px-3 py-2 rounded-lg border border-green-500/30" style={{ cursor: 'pointer' }}>
+              Login
+            </button>
           )}
         </div>
       </nav>

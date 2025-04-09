@@ -13,6 +13,7 @@ import {
   Dumbbell,
 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from '../context/AuthContext';
 
 // Types
 interface Achievement {
@@ -58,6 +59,7 @@ export default function Page() {
     nextLevelXP: 100,
   });
   const [loading, setLoading] = useState(true);
+  const { logout } = useAuth();
 
   useEffect(() => {
     // Simulate fetching achievements
@@ -195,9 +197,12 @@ export default function Page() {
     <div className="min-h-dvh h-dvh bg-[#0f172a] text-white pt-20 pb-6 px-6 overflow-hidden box-border flex flex-col">
       {/* Navbar */}
       <div className="fixed top-0 left-0 right-0 flex justify-between items-center px-8 py-4 bg-[#0f172a]/80 backdrop-blur-md z-50 border-b border-white/10">
-        <a href="#" className="text-2xl font-bold text-white">
+        <Link
+          href={"/"}
+          className="text-2xl font-bold text-white"
+        >
           OmniFit
-        </a>
+        </Link>
         <div className="flex gap-8 items-center">
           <Link
             href={"/dashboard"}
@@ -205,14 +210,27 @@ export default function Page() {
           >
             Dashboard
           </Link>
-          <button className="text-white font-medium hover:text-[#6C47FF] transition-colors">
-            Workouts
-          </button>
-          <button className="text-white font-medium hover:text-[#6C47FF] transition-colors">
-            Progress
-          </button>
-          <button className="text-white font-medium text-[#6C47FF]">
+          <Link
+            href={"/workouts"}
+            className="text-white font-medium hover:text-[#6C47FF] transition-colors"
+          >
+            My Workouts
+          </Link>
+          <Link
+            href={"/achievements"}
+            className="text-white font-medium text-[#6C47FF]"
+          >
             Achievements
+          </Link>
+          <button 
+            onClick={() => {
+              logout();
+              window.location.href = '/';
+            }}
+            className="bg-red-500/20 text-white font-medium hover:bg-red-500/30 transition-colors px-3 py-2 rounded-lg border border-red-500/30"
+            style={{ cursor: 'pointer' }}
+          >
+            Logout
           </button>
         </div>
       </div>
@@ -225,10 +243,6 @@ export default function Page() {
             Track your progress and earn rewards
           </p>
         </div>
-        <button className="flex items-center gap-2 px-3 py-2 bg-red-500/20 text-white rounded-lg font-medium transition-all hover:bg-red-500/30 border border-red-500/30 text-sm">
-          <LogOut className="size-4" />
-          Logout
-        </button>
       </div>
 
       {/* Content Container */}
