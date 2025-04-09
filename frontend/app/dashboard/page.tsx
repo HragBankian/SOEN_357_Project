@@ -2,21 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { format, startOfWeek, addDays } from 'date-fns';
+import { format, addDays } from 'date-fns';
 import styles from '../dashboard.module.css';
 import { useAuth } from '../context/AuthContext';
 import {API_URL} from "@/utils/apiConnection";
+import {DayTrackerModel} from '@/models/DayTrackerModel';
 
 // Simple SVG icons
 const CheckIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
     <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-  </svg>
-);
-
-const LogoutIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-    <path fillRule="evenodd" d="M7.5 3.75A1.5 1.5 0 006 5.25v13.5a1.5 1.5 0 001.5 1.5h6a1.5 1.5 0 001.5-1.5V15a.75.75 0 011.5 0v3.75a3 3 0 01-3 3h-6a3 3 0 01-3-3V5.25a3 3 0 013-3h6a3 3 0 013 3V9A.75.75 0 0115 9V5.25a1.5 1.5 0 00-1.5-1.5h-6zm5.03 4.72a.75.75 0 010 1.06l-3 3a.75.75 0 01-1.06 0l-3-3a.75.75 0 011.06-1.06L12 10.94l2.47-2.47a.75.75 0 011.06 0z" clipRule="evenodd" />
   </svg>
 );
 
@@ -50,51 +45,61 @@ const weightTrendData = [
 ];
 
 // Function to save day data to backend (placeholder for future implementation)
-const saveDayToBackend = async (day: string, weight: number | null, workoutIsComplete: boolean) => {
+const saveDay = async (day: string, weight: number | null, workoutIsComplete: boolean) => {
   try {
-    // This is a placeholder for the actual API call
-    console.log(`Saving data for ${day}: Weight=${weight}, Workout Complete=${workoutIsComplete}`);
-    
-    // In the future, this will be replaced with an actual API call like:
-    // const response = await fetch('/api/save-day', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     day,
-    //     weight,
-    //     workoutIsComplete
-    //   }),
-    // });
-    // 
-    // if (!response.ok) {
-    //   throw new Error('Failed to save day data');
-    // }
-    // 
-    // return await response.json();
-    
-    // For now, just return a success message
-    //return { success: true, message: `Data saved for ${day}` };
-    await fetchWorkouts();
+    // Step 1: Fetch all existing days
+    const days: DayTrackerModel[] = await fetchDays();
+    const existingDay = days.find(d => d.day_of_week.toLowerCase() === day.toLowerCase());
+
+    if (!existingDay) {
+      throw new Error(`No existing entry found for day: ${day}`);
+    }
+
+    // Step 2: Create updated object
+    const updatedDay: DayTrackerModel = {
+      ...existingDay,
+      bodyweight: weight,
+      workout_is_complete: workoutIsComplete,
+    };
+
+    // Step 3: Send PUT request to update the day
+    const response = await fetch(`${API_URL}/api/Tracker/UpdateDay`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedDay),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update day: ${day}`);
+    }
+
+    console.log(`Updated day ${day} successfully`);
+    await fetchDays(); // Optionally refresh state
   } catch (error) {
     console.error('Error saving day data:', error);
     throw error;
   }
 };
-const fetchWorkouts = async () => {
+
+const fetchDays = async (): Promise<DayTrackerModel[]> => {
   try {
-    const response = await fetch(`${API_URL}/api/Workout/GetAll`);
+    const response = await fetch(`${API_URL}/api/Tracker/GetAllDays`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('Workout data:', data);
+    const data: DayTrackerModel[] = await response.json();
+    console.log('Day tracker data:', data);
+    return data;
   } catch (error) {
-    console.error('Failed to fetch workouts:', error);
+    console.error('Failed to fetch day tracker data:', error);
+    return [];
   }
 };
+
+
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -175,14 +180,14 @@ export default function DashboardPage() {
   const handleSaveDay = async (dayOfTheWeek: string, weight: number | null, workoutCompleted: boolean) => {
     try {
       // Call the function to save data to backend
-      const result = await saveDayToBackend(
+      await saveDay(
         dayOfTheWeek,
         weight,
         workoutCompleted
       );
       
       // Show success message
-      alert(`Day ${dayOfTheWeek} saved successfully!`);
+      alert(`Day ${dayOfTheWeek.charAt(0).toUpperCase() + dayOfTheWeek.slice(1)} saved successfully!`);
     } catch (error) {
       // Show error message
       alert(`Failed to save day data: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -200,9 +205,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
-  const weekStartDate = weekData[0]?.date;
-  const formattedWeekStart = format(weekStartDate || new Date(), 'MMMM d, yyyy');
 
   // Calculate max values for graphs
   const maxWorkoutCount = Math.max(...weeklyWorkoutData.map(item => item.count));
