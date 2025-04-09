@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { format, startOfWeek, addDays } from 'date-fns';
 import styles from '../dashboard.module.css';
 import { useAuth } from '../context/AuthContext';
+import {API_URL} from "@/utils/apiConnection";
 
 // Simple SVG icons
 const CheckIcon = () => (
@@ -74,10 +75,24 @@ const saveDayToBackend = async (day: string, weight: number | null, workoutIsCom
     // return await response.json();
     
     // For now, just return a success message
-    return { success: true, message: `Data saved for ${day}` };
+    //return { success: true, message: `Data saved for ${day}` };
+    await fetchWorkouts();
   } catch (error) {
     console.error('Error saving day data:', error);
     throw error;
+  }
+};
+const fetchWorkouts = async () => {
+  try {
+    const response = await fetch(`${API_URL}/api/Workout/GetAll`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('Workout data:', data);
+  } catch (error) {
+    console.error('Failed to fetch workouts:', error);
   }
 };
 
