@@ -203,6 +203,7 @@ export default function DashboardPage() {
         <a href="/" className={styles.navbarLogo}>OmniFit</a>
         <div className={styles.navbarLinks}>
           <a href="/dashboard" className={styles.navbarLink}>Dashboard</a>
+          <a href="/workouts" className={styles.navbarLink}>My Workouts</a>
           <button onClick={handleLogout} className={styles.navbarLink}>
             Logout
           </button>
